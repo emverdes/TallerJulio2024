@@ -1,2 +1,24 @@
-# TallerJulio2024
-Trabajos de laboratorio durante el taller
+# Taller Linux 2024
+
+Estos son playbooks de ansible que hacemos para el taller de Servidores Linux
+
+## Instalacion
+
+Instalamos Ansible usando pipx
+
+```bash
+# dnf install python3-pip
+$ pip install pipx
+$ pipx ensurepath
+$ pipx install ansible-core
+```
+
+## Uso
+
+```bash
+$ ansible-playbook -i inventario/servidores site.yml
+```
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
