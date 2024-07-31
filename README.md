@@ -10,7 +10,6 @@ Instalamos Ansible usando pipx
 # dnf install python3-pip
 $ pip install pipx
 $ pipx ensurepath
-$ pipx install ansible-core
 ```
 
 ## Uso
