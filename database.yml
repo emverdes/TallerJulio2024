@@ -41,6 +41,13 @@
       state: present
       update-cache: true
 
+  - name: Cambiar la configuracion para escuchar en todas las interfaces
+    ansible.builtin.lineinfile:
+      path: /etc/mysql/mysql.conf.d/mysqld.cnf
+      regexp: '^bind-address'
+      line: 'bind-address         = 0.0.0.0'
+    notify: Restart mariadb
+
   - name: Servidor Mariadb levantado
     ansible.builtin.systemd_service: 
       name: mariadb
@@ -67,3 +74,10 @@
       target: ./files/todo.sql
     delegate_to: localhost
     connection: local
+
+handlers:
+
+- name: Restart mariadb
+    ansible.builtin.systemd_service: 
+      name: mariadb
+      state: restarted
