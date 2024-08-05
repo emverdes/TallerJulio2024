@@ -40,6 +40,10 @@
       name: mariadb-server
       state: present
       update-cache: true
+    loop:
+      - mariadb-server
+      - mariadb-client
+      - python3-pymysql
 
   - name: Cambiar la configuracion para escuchar en todas las interfaces
     ansible.builtin.lineinfile:
@@ -47,6 +51,9 @@
       regexp: '^bind-address'
       line: 'bind-address         = 0.0.0.0'
     notify: Restart mariadb
+
+  - name: Ejecuto el handler si cambió la configuración
+    meta: flush_handlers
 
   - name: Servidor Mariadb levantado
     ansible.builtin.systemd_service: 
@@ -61,23 +68,27 @@
       protocol: tcp
       direction: in
 
-##  Configuracion de la base de datos
+##  Configuracion de la base de datos de la aplicación
+
+  - name: Copio el dump de la base de datos
+    ansible.builtin.copy:
+      src: ./files/todo.sql
+      dest: /tmp/todo.sql
 
   - name: Creo la base de datos todo
     community.mysql.mysql_db:
-      check_implicit_admin: true
-      login_host: "{{ hostvars[inventory_hostname].ansible_host }}"
-      login_user: root
-      login_password: dbadmin
+#      check_implicit_admin: true
+#      login_host: localhost 
+      login_unix_socket: /run/mysqld/mysqld.sock
+#      login_user: root
+#      login_password: dbadmin
       name: todo
       state: import
-      target: ./files/todo.sql
-    delegate_to: localhost
-    connection: local
+      target: /tmp/todo.sql
 
-handlers:
+  handlers:
 
-- name: Restart mariadb
+  - name: Restart mariadb
     ansible.builtin.systemd_service: 
       name: mariadb
       state: restarted
